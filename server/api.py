@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
-from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-import datetime
-import time
 import requests
+import time
+import datetime
 import re
 #########################################################
 app = FastAPI()
@@ -17,13 +16,6 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
 ]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 #위의 설정은 모든 origin, 모든 cookie, 모든 method, 모든 header를 allow한다.
 ########################POST를 위한 모델 설정#############################
@@ -31,6 +23,13 @@ class NFT(BaseModel):
     grade: str
     img: str
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 ######################메타데이터 생성하기###########################
 def createMetadata(grade, img):
     url = "https://metadata-api.klaytnapi.com/v1/metadata"
@@ -67,12 +66,10 @@ def createMetadata(grade, img):
     # }     //KAS Medata API 메타데이터 생성 부분 리턴 형태
     print(response.json())
     return response.json()['uri']
-
-def mintNFT(uri, tokenID):
-    url = "https://kip17-api.klaytnapi.com/v1/contract/0xe3a390fdb12dafe2eb37d7829d11a18f37e59424/token" #beefcoin
-    #url = "https://kip17-api.klaytnapi.com/v1/contract/0xe966c58075372c9ddeb2d07080075f32d053f463/token" #maidcat
     
-
+def mintNFT(uri, tokenID):
+    url = "https://kip17-api.klaytnapi.com/v2/contract/0xe3a390fdb12dafe2eb37d7829d11a18f37e59424/token" #beefcoin
+    
     payload = {
         "to": "0x24b2803c34b11740acd0cc35648e34163c5cba0c",
         "id": tokenID,
@@ -86,6 +83,28 @@ def mintNFT(uri, tokenID):
 
     response = requests.request("POST", url, json=payload, headers=headers)
     return response.json()
+
+
+@app.get("/", tags=["Root"])
+async def read_root():
+  return { 
+    "message": "Welcome to my Project by JONGHEON LEE"
+   }
+   
+@app.post("/test")
+async def TEST(item: test):
+    params = dict(item)
+    return params
+
+# @app.get("/nftMint")
+# async def test():
+#   res = createMetadata()
+#   #KAS에서 토큰을 발행할 때 토큰 아이디는 무조건 16진수여야 한다 현재시간을 일렬로 정수형만 추출해 16진수로 변환시켜서 호출한다.
+#   hex_tokenID = hex(int('0x'+re.sub(r'[^0-9]', '',str(datetime.datetime.now())),16))
+#   result  = mintNFT(res, hex_tokenID)
+#   result["Klaytnscope"] = "https://baobab.scope.klaytn.com/tx/"+result["transactionHash"]+"?tabId=nftTransfer"
+#   print(result)
+#   return result
 
 @app.post("/nftMint")
 async def MINT(item: NFT):
@@ -101,13 +120,3 @@ async def MINT(item: NFT):
         return result
     else:
         return params
-@app.get("/", tags=["Root"])
-async def read_root():
-  return { 
-    "message": "Welcome to my Beef-NFT Project by JONGHEON LEE"
-   }
-@app.get("/han", tags=["Root"])
-async def read_root():
-  return { 
-    "message": "Welcome to my Hanium Project by JONGHEON LEE"
-   }
