@@ -247,12 +247,14 @@
             //teachable machine model 남겨 놓기
             const prediction1 = await model.predict(image, false);
             //Flask 서버에 있는 AI 모델을 통한 소고기 등급 호출 및 결과 리턴 받기
-            const resp = await axios.post('https://beef-fastapi-ai.herokuapp.com/predict',data).then(function (response) {
+            //const resp = await axios.post('https://beef-fastapi-ai.herokuapp.com/predict',data).then(function (response) {
+            const resp = await axios.post('https://fastapi-production-6517.up.railway.app/predict',data).then(function (response) {
             const prediction = response.data;
             prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability));
             console.log(prediction[0].className);
             const fat_data = {"img": img, "grade": prediction[0].className}
-            axios.post('https://beef-fastapi-ai.herokuapp.com/fat',fat_data).then(function (response) {
+            //axios.post('https://beef-fastapi-ai.herokuapp.com/fat',fat_data).then(function (response) {
+            axios.post('https://fastapi-production-6517.up.railway.app/fat',fat_data).then(function (response) {
                 localStorage.setItem('fat', String(response.data.toFixed(3)) + "%");
                 document.getElementById("fat").innerHTML += String(response.data.toFixed(3)) + "%";
                 console.log(response.data);});
