@@ -171,7 +171,7 @@
         let URL;
         const urlMale = "https://teachablemachine.withgoogle.com/models/o9D1N5TN/";
         const urlFemale = "https://teachablemachine.withgoogle.com/models/bB3YHn5r/";
-        const urlMeat = "https://teachablemachine.withgoogle.com/models/bB3YHn5r/"; // -> female로 대체
+        const urlMeat = "https://teachablemachine.withgoogle.com/models/bB3YHn5r/";
         //const urlMeat = "https://teachablemachine.withgoogle.com/models/f64brCWdq/"; -> CORS 오류 발생
         //Google Teachable Machine Model Link 부분
         let model, webcam, labelContainer, maxPredictions;
@@ -182,8 +182,10 @@
                 // URL = urlFemale;
                 URL = urlMeat;
             }
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
+            const modelURL = "model.json";
+            const metadataURL = "metadata.json";
+            // const modelURL = URL + "model.json";
+            // const metadataURL = URL + "metadata.json";
             model = await tmImage.load(modelURL, metadataURL);
             maxPredictions = model.getTotalClasses();
             labelContainer = document.getElementById("label-container");
